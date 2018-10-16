@@ -98,6 +98,9 @@ export class RuleEditor extends LinkedComponent {
       isPending: false,
       changesApplied: undefined
     };
+
+    this.newEmailLink = this.linkTo('newEmail') // Matches email address pattern
+      .check(val => isEmail(val), () => this.props.t('rules.flyouts.ruleEditor.actions.syntaxError'));
   }
 
   componentDidMount() {
@@ -122,9 +125,9 @@ export class RuleEditor extends LinkedComponent {
       })),
       actions:
         !rule.actions || rule.actions.length === 0
-        ? [newAction()]
-        : rule.actions.map(action => ({ ...action, key: actionKey++ })
-      ),
+          ? [newAction()]
+          : rule.actions.map(action => ({ ...action, key: actionKey++ })
+          ),
       actionEnabled: rule.actions === undefined ? false : (rule.actions || []).length > 0 ? true : false
     }
   });
@@ -161,7 +164,7 @@ export class RuleEditor extends LinkedComponent {
 
   apply = (event) => {
     event.preventDefault();
-    const { insertRules, modifyRules, logEvent } = this.props;
+    const { insertRules, modifyRules, logEvent, t } = this.props;
     const requestProps = { ...this.state.formData };
     const { devicesAffected, newEmail } = this.state;
     if (requestProps.calculation === ruleCalculations[1]) requestProps.timePeriod = '';
@@ -180,8 +183,16 @@ export class RuleEditor extends LinkedComponent {
         }
       };
 
-      if (this.state.formData.actionEnabled && newEmail !== '') {
-        requestProps.actions[0].parameters.recipients.push(newEmail);
+      if (this.state.formData.actionEnabled) {
+        const action = requestProps.actions[0];
+        if (newEmail !== '') {
+          action.parameters.recipients.push(newEmail);
+        }
+
+        if (action.parameters.subject === '') {
+          const ruleName = requestProps.name
+          action.parameters.subject = t('rules.flyouts.ruleEditor.actions.defaultEmailSubject', { ruleName });
+        }
       }
 
       logEvent(toRuleDiagnosticsModel('Rule_ApplyClick', requestProps));
@@ -371,16 +382,14 @@ export class RuleEditor extends LinkedComponent {
       return { fieldLink, operatorLink, valueLink, error };
     });
 
-    this.newEmailLink = this.linkTo('newEmail') // Matches email address pattern
-      .check(val => isEmail(val), () => this.props.t('rules.flyouts.ruleEditor.actions.syntaxError'));
     const actionLinks = this.actionsLink.getLinkedChildren(actionLink => {
       const parametersLink = actionLink.forkTo('parameters');
       // recipients is valid if email input box is empty and at least one email has been
       // entered, or if email input box has a valid email
       const recipientsLink = parametersLink.forkTo('recipients')
         .check(val => ((this.state.newEmail !== '' && isEmail(this.state.newEmail))
-                        || (val.length > 0 && (isEmail(this.state.newEmail)))),
-         this.props.t('rules.flyouts.ruleEditor.validation.required'));
+          || (val.length > 0 && (isEmail(this.state.newEmail)))),
+          this.props.t('rules.flyouts.ruleEditor.validation.required'));
       const notesLink = parametersLink.forkTo('notes');
       const subjectLink = parametersLink.forkTo('subject');
       const error = formData.actionEnabled ? (recipientsLink.error) : false;
@@ -564,7 +573,7 @@ export class RuleEditor extends LinkedComponent {
                           <FormControl
                             type="textarea"
                             link={action.subjectLink}
-                            placeholder={t('rules.flyouts.ruleEditor.actions.enterEmailSubject')}/>
+                            placeholder={t('rules.flyouts.ruleEditor.actions.enterEmailSubject')} />
                         </FormGroup>
                         <p className="padded-top">{t('rules.flyouts.ruleEditor.actions.emailComments')}</p>
                         <FormGroup>
@@ -574,12 +583,13 @@ export class RuleEditor extends LinkedComponent {
                             placeholder={t('rules.flyouts.ruleEditor.actions.enterEmailComments')} />
                         </FormGroup>
                       </Section.Content>
-                    ))}
-                    </Section.Content>
+                    ))
+                  }
+                </Section.Content>
               </Section.Container>
               <Section.Container>
-                    <Section.Header>{t('rules.flyouts.ruleEditor.ruleStatus')}</Section.Header>
-                    <Section.Content>
+                <Section.Header>{t('rules.flyouts.ruleEditor.ruleStatus')}</Section.Header>
+                <Section.Content>
                   <FormGroup>
                     <ToggleBtn
                       value={formData.enabled}
@@ -607,9 +617,9 @@ export class RuleEditor extends LinkedComponent {
         {
           <BtnToolbar>
             <Btn primary={true}
-                 disabled={!!changesApplied || isPending || !this.formIsValid() || conditionsHaveErrors || actionsHaveErrors}
-                 type="submit">
-                  {t('rules.flyouts.ruleEditor.apply')}
+              disabled={!!changesApplied || isPending || !this.formIsValid() || conditionsHaveErrors || actionsHaveErrors}
+              type="submit">
+              {t('rules.flyouts.ruleEditor.apply')}
             </Btn>
             <Btn svg={svgs.cancelX} onClick={this.onCloseClick}>{t('rules.flyouts.ruleEditor.cancel')}</Btn>
           </BtnToolbar>

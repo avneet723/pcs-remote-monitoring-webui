@@ -36,13 +36,9 @@ $pillIconWrapperSize: 30px;
     color: themed('colorPillText');
     background-color: themed('colorPillBackground');
 
-    .pill-icon {
-      background-color: themed('colorPillBackgroundSvg');
-    }
+    .pill-icon { background-color: themed('colorPillBackgroundSvg'); }
 
-    .pill-icon svg {
-      fill: themed('colorPillSvg');
-    }
+    .pill-icon svg { fill: themed('colorPillSvg'); }
 
     &:focus { outline: 1px dashed themed('colorBtnOutlineFocus'); }
 
@@ -50,13 +46,9 @@ $pillIconWrapperSize: 30px;
       color: themed('colorPillTextHover');
       background-color: themed('colorPillBackgroundHover');
 
-      .pill-icon {
-        background-color: themed('colorPillBackgroundSvgHover');
-      }
+      .pill-icon { background-color: themed('colorPillBackgroundSvgHover'); }
 
-      .pill-icon svg {
-        fill: themed('colorPillSvgHover');
-      }
+      .pill-icon svg { fill: themed('colorPillSvgHover'); }
 
     }
 

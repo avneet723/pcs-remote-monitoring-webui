@@ -152,9 +152,7 @@ export const toEditRuleRequestModel = ({
     Parameters: {
       Notes: act.parameters.notes,
       Recipients: act.parameters.recipients,
-      Subject: act.parameters.subject.length > 0
-        ? act.parameters.subject
-        : 'Azure IoT Remote Monitoring alert: ' + name + " was triggered"
+      Subject: act.parameters.subject
     }
   }));
 

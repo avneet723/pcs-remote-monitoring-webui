@@ -435,7 +435,8 @@
           "enterEmailSubject": "Azure IoT Remote Monitoring alert: <Rule Name> was triggered",
           "syntaxError": "Not a valid email address",
           "on": "Email enabled",
-          "off": "Email disabled"
+          "off": "Email disabled",
+          "defaultEmailSubject": "Azure IoT Remote Monitoring alert: {{ruleName}} was triggered"
         },
         "calculationOptions": {
           "average": "Average",
